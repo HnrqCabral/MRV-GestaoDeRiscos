@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#087b52">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Gestão de Riscos">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<title>MRV | Gestão de Riscos</title>
+<style>
+:root{--green:#07804f;--green-dark:#075f3d;--orange:#f28c28;--ink:#202b26;--muted:#718078;--line:#dfe8e2;--red:#c63b3b;--shadow:0 12px 35px rgba(25,55,40,.08)}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 5% 5%,rgba(35,210,125,.75),transparent 48%),radial-gradient(ellipse at 95% 100%,rgba(35,195,105,.75),transparent 48%),radial-gradient(ellipse at 75% 5%,rgba(255,220,135,.75),transparent 55%),radial-gradient(ellipse at 45% 65%,rgba(255,245,205,.65),transparent 60%),linear-gradient(135deg,#d8eee1,#f4eed8);background-attachment:fixed;color:var(--ink);font-family:Inter,Arial,sans-serif}
+button,input,select,textarea{font:inherit}
+.top{background:#fff;border-bottom:1px solid var(--line);position:relative;z-index:10}
+.topin{max-width:900px;height:80px;margin:auto;padding:0 20px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{height:80px;display:flex;align-items:center}
+.brand-logo{display:block;width:auto;height:127px;max-width:450px;object-fit:contain}
+.tag{font-size:10px;letter-spacing:1px;color:var(--muted);font-weight:800}
+main{max-width:850px;margin:28px auto;padding:0 16px 50px}
+.heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
+.heading h1{font-size:24px;margin:0 0 5px;color:#fff}
+.heading p{font-size:13px;color:#000;margin:0}
+.demo{font-size:10px;font-weight:900;color:var(--green);background:#e7f5ed;border:1px solid #c9e8d5;padding:8px 11px;border-radius:30px;white-space:nowrap}
+.formcard{background:#fff;border:1px solid var(--line);border-radius:17px;box-shadow:var(--shadow);overflow:hidden}
+.banner{display:flex;align-items:center;gap:14px;padding:15px 18px;background:linear-gradient(100deg,#087b52,#0b965f);color:#fff}
+.banner-logo{display:block;width:65px;height:65px;object-fit:contain;flex-shrink:0;padding-right:14px;border-right:1px solid #ffffff55}
+.banner .formtitle{font-weight:800;font-size:17px;line-height:1.3}
+.body{padding:21px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:17px 14px}
+.field{min-width:0}
+.field.full{grid-column:1/-1}
+.field label{display:block;font-size:12px;font-weight:700;color:#3d4a43;margin:0 0 7px}
+.req{color:var(--red)}
+.field input,.field select,.field textarea{display:block;width:100%;min-height:43px;border:1px solid #d5dfd8;border-radius:8px;padding:10px 12px;background:#fff;color:var(--ink);outline:none}
+.field textarea{min-height:76px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px #07804f18}
+.field input::placeholder,.field textarea::placeholder{color:#a0aaa4}
+.upload{border:1px dashed #b9c9bf;border-radius:10px;padding:17px;background:#fafcfb}
+.uploadrow{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.uploadtitle{font-size:12px;font-weight:700}
+.uploadbtn{background:#edf6f0;color:var(--green-dark);padding:9px 13px;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer}
+.upload input{display:none}
+.filelist{font-size:11px;color:var(--muted);margin-top:10px;display:grid;gap:6px}
+.fileitem{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.fileitem button{border:0;background:#fff0ef;color:#a33;padding:4px 8px;border-radius:6px}
+.notice{grid-column:1/-1;padding:15px;border-radius:10px;background:#eef6ff;color:#345a7c;border:1px solid #d8e7f5;font-size:13px;line-height:1.5}
+.notice strong{display:block;margin-bottom:4px}
+.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:21px}
+.btn{border:0;border-radius:9px;padding:12px 18px;font-weight:800;font-size:13px;cursor:pointer}
+.btn.primary{background:var(--green);color:#fff}
+.btn.secondary{background:#edf1ee;color:#435249}
+.hidden{display:none!important}
+.footer{text-align:center;color:#8a968f;font-size:11px;margin-top:16px}
+.obra-picker{position:relative}
+.obra-trigger{width:100%;min-height:44px;padding:10px 12px;border:1px solid #d5dfd8;border-radius:8px;background:#fff;color:var(--ink);display:flex;justify-content:space-between;align-items:center;text-align:left;cursor:pointer}
+.obra-trigger:focus{outline:0;border-color:var(--green);box-shadow:0 0 0 3px #07804f18}
+.obra-menu{position:absolute;z-index:20;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid var(--line);border-radius:11px;box-shadow:0 15px 35px #183b2920;padding:10px}
+.obra-menu input{width:100%;height:40px;border:1px solid var(--line);border-radius:8px;padding:9px 11px;outline:none}
+.obra-hint{font-size:11px;color:var(--muted);padding:9px 3px 7px}
+.obra-list{max-height:280px;overflow:auto}
+.obra-option{display:flex;align-items:center;gap:8px;padding:9px 7px;border-radius:7px;font-size:13px}
+.obra-option:hover{background:#f1f7f3}
+.obra-option .obra-name{flex:1;cursor:pointer;line-height:1.3}
+.obra-option .obra-star{border:0;background:transparent;color:#9aa59e;font-size:19px;cursor:pointer;padding:0 5px;line-height:1}
+.obra-option .obra-star.active{color:#e2a400}
+.obra-empty{padding:15px 8px;color:var(--muted);font-size:12px}
+.control-hint{display:block;font-size:10px;color:#89958e;margin:5px 2px 0}
+.custom-calendar,.time-picker{position:relative;width:100%}
+.calendar-trigger,.time-trigger{width:100%;min-height:50px;padding:12px 13px;border:1px solid #d5dfd8;border-radius:10px;background:#fff;color:var(--ink);font-size:15px;font-weight:600;text-align:left;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.calendar-trigger:hover,.time-trigger:hover{border-color:#9bb9a6}
+.calendar-trigger:focus,.time-trigger:focus{outline:0;border-color:var(--green);box-shadow:0 0 0 3px #07804f18}
+.calendar-popup,.time-popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(340px,calc(100vw - 24px));background:#fff;border:1px solid #e1e8e3;border-radius:13px;box-shadow:0 12px 35px rgba(25,55,40,.22);z-index:100000;overflow:hidden}
+.calendar-popup{max-height:calc(100dvh - 24px);overflow-y:auto}
+.calendar-header{background:var(--orange);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:15px 13px;position:sticky;top:0;z-index:2}
+.calendar-month{font-size:15px;font-weight:800;text-transform:capitalize}
+.calendar-nav{border:0;background:#ffffff30;color:#fff;width:31px;height:31px;border-radius:7px;font-size:20px;cursor:pointer}
+.calendar-weekdays,.calendar-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));padding:8px;gap:3px}
+.calendar-weekdays span{text-align:center;font-size:11px;font-weight:800;color:#7b8980;padding:7px 0}
+.calendar-day{border:0;background:transparent;color:#34433a;height:37px;border-radius:8px;font-size:13px;cursor:pointer}
+.calendar-day:hover{background:#eaf4ed}
+.calendar-day.today{border:1px solid var(--green);font-weight:800}
+.calendar-day.selected{background:var(--green);color:#fff;font-weight:800}
+.calendar-day.other-month{color:#bdc6bf}
+.calendar-footer{border-top:1px solid #edf1ee;padding:10px 12px;display:flex;justify-content:space-between;align-items:center}
+.calendar-footer button{border:0;background:transparent;color:var(--green);font-size:12px;font-weight:800;cursor:pointer;padding:5px}
+.calendar-hidden,.time-hidden{display:none!important}
+.time-trigger-icon{font-size:20px;color:var(--green)}
+.time-header{background:#087b52;color:#fff;padding:15px;text-align:center}
+.time-header-title{font-size:11px;font-weight:700;opacity:.85;margin-bottom:8px}
+.time-preview{display:flex;justify-content:center;align-items:center;gap:7px;font-size:35px;font-weight:900;font-variant-numeric:tabular-nums}
+.time-preview-hour{color:#ffad52}
+.time-preview-minute{color:#75dda6}
+.time-preview-separator{color:#fff}
+.time-columns{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:15px 20px 12px}
+.time-column{min-width:0;text-align:center}
+.time-column-title{font-size:11px;font-weight:900;margin-bottom:8px;color:#59675f;text-transform:uppercase;letter-spacing:.5px}
+.hour-title{color:#e78320}
+.minute-title{color:var(--green)}
+.time-options{height:190px;overflow-y:auto;overscroll-behavior:contain;border:1px solid #edf1ee;border-radius:9px;padding:5px;scroll-behavior:smooth}
+.time-option{display:block;width:100%;height:34px;border:0;border-radius:7px;background:transparent;color:#425047;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:2px}
+.time-option:hover{background:#f1f6f2}
+.hour-option.selected{background:var(--orange);color:#fff;font-weight:900}
+.minute-option.selected{background:var(--green);color:#fff;font-weight:900}
+.time-footer{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 15px;border-top:1px solid #edf1ee}
+.time-footer button{border:0;border-radius:8px;padding:9px 14px;font-size:12px;font-weight:800;cursor:pointer}
+.time-cancel{background:#edf1ee;color:#526057}
+.time-confirm{background:var(--green);color:#fff}
+
+.toast{position:fixed;right:20px;bottom:20px;z-index:200000;display:flex;align-items:center;gap:11px;max-width:min(420px,calc(100vw - 32px));padding:15px 18px;background:#fff;color:var(--ink);border:1px solid #dfe8e2;border-left:4px solid var(--green);border-radius:12px;box-shadow:0 12px 35px rgba(25,55,40,.18);font-size:13px;font-weight:700;opacity:0;transform:translateY(14px);pointer-events:none;transition:opacity .22s ease,transform .22s ease}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast-icon{width:25px;height:25px;display:grid;place-items:center;flex-shrink:0;border-radius:50%;background:#e7f5ed;color:var(--green);font-size:15px}
+@media(max-width:600px){
+ main{margin:17px auto;padding:0 11px 35px}
+ .topin{height:70px;padding:0 14px}
+ .brand{height:70px}
+ .brand-logo{height:100px;max-width:350px}
+ .tag{font-size:9px}
+ .heading{align-items:flex-start;flex-direction:column}
+ .heading h1{font-size:22px}
+ .body{padding:16px}
+ .grid{grid-template-columns:1fr;gap:15px}
+ .field.full,.notice{grid-column:auto}
+ .banner{padding:11px 13px;gap:12px}
+ .banner-logo{width:58px;height:58px;padding-right:11px}
+ .banner .formtitle{font-size:15px}
+ .actions{flex-direction:column-reverse}
+ .actions .btn{width:100%}
+ .calendar-day{height:40px}
+ .time-columns{padding:13px 14px 10px;gap:10px}
+}
+
+#installAppButton{position:fixed;right:18px;bottom:18px;z-index:300000;border:0;border-radius:999px;padding:13px 18px;background:#087b52;color:#fff;font-size:13px;font-weight:800;box-shadow:0 8px 25px #123b2a40;cursor:pointer}
+#installAppButton[hidden]{display:none}
+@media(max-width:600px){#installAppButton{left:14px;right:14px;bottom:14px;width:calc(100% - 28px)}}
+</style>
+</head>
+<body>
+<button id="installAppButton" type="button" hidden>＋ Instalar aplicativo</button>
+<header class="top">
+ <div class="topin">
+  <div class="brand"><img src="logo-mrv.png" alt="MRV" class="brand-logo"></div>
+  <span class="tag">PROTÓTIPO DE DEMONSTRAÇÃO</span>
+ </div>
+</header>
+
+<main>
+ <div class="heading">
+  <div><h1>Gestão de Riscos</h1><p>Preencha os dados da ocorrência.</p></div>
+  <span class="demo">● MODO DE TESTE — NÃO ENVIA À MRV</span>
+ </div>
+
+ <section class="formcard">
+  <div class="banner">
+   <img src="logo-faixa-mrv.png" alt="Logo MRV" class="banner-logo">
+   <div class="formtitle">Comunicação inicial<br>FOR.002.16</div>
+  </div>
+
+  <form id="form" class="body">
+   <div class="grid">
+    <div class="field full">
+     <label for="obraSearch">Nome da Obra: <span class="req">*</span></label>
+     <input type="hidden" id="obra" required>
+     <div class="obra-picker" id="obraPicker">
+      <button type="button" class="obra-trigger" id="obraTrigger" aria-expanded="false"><span id="obraChosen">Selecione uma obra...</span><span>⌄</span></button>
+      <div class="obra-menu hidden" id="obraMenu">
+       <input type="search" id="obraSearch" placeholder="Buscar obra pelo nome..." autocomplete="off">
+       <div class="obra-hint">★ Favoritas ficam fixadas no topo</div>
+       <div id="obraList" class="obra-list"></div>
+      </div>
+     </div>
+    </div>
+
+    <div class="field">
+     <label for="data">Data Ocorrência: <span class="req">*</span></label>
+     <div class="custom-calendar">
+      <input type="hidden" id="data">
+      <button type="button" class="calendar-trigger" id="calendarTrigger" aria-expanded="false"><span id="calendarSelected">Selecione uma data...</span><span>📅</span></button>
+      <div class="calendar-popup calendar-hidden" id="calendarPopup">
+       <div class="calendar-header">
+        <button type="button" class="calendar-nav" id="calendarPrev">‹</button>
+        <span class="calendar-month" id="calendarMonth"></span>
+        <button type="button" class="calendar-nav" id="calendarNext">›</button>
+       </div>
+       <div class="calendar-weekdays"><span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span></div>
+       <div class="calendar-days" id="calendarDays"></div>
+       <div class="calendar-footer"><button type="button" id="calendarToday">Hoje</button><button type="button" id="calendarClear">Limpar data</button></div>
+      </div>
+     </div>
+     <span class="control-hint">Toque para abrir o calendário</span>
+    </div>
+
+    <div class="field">
+     <label for="hora">Hora Ocorrência: <span class="req">*</span></label>
+     <div class="time-picker">
+      <input type="hidden" id="hora">
+      <button type="button" class="time-trigger" id="timeTrigger" aria-expanded="false"><span id="timeSelected">Selecione um horário...</span><span class="time-trigger-icon">◷</span></button>
+      <div class="time-popup time-hidden" id="timePopup">
+       <div class="time-header">
+        <div class="time-header-title">HORÁRIO DA OCORRÊNCIA</div>
+        <div class="time-preview"><span class="time-preview-hour" id="previewHour">00</span><span class="time-preview-separator">:</span><span class="time-preview-minute" id="previewMinute">00</span></div>
+       </div>
+       <div class="time-columns">
+        <div class="time-column"><div class="time-column-title hour-title">Hora</div><div class="time-options" id="hourOptions"></div></div>
+        <div class="time-column"><div class="time-column-title minute-title">Minuto</div><div class="time-options" id="minuteOptions"></div></div>
+       </div>
+       <div class="time-footer"><button type="button" class="time-cancel" id="timeCancel">Cancelar</button><button type="button" class="time-confirm" id="timeConfirm">Confirmar horário</button></div>
+      </div>
+     </div>
+     <span class="control-hint">Toque para escolher o horário</span>
+    </div>
+
+    <div class="field full">
+     <label for="tipoEvento">Tipo de Evento: <span class="req">*</span></label>
+     <select id="tipoEvento" required>
+      <option value="">Selecione...</option>
+      <option>Acidente de Comunidade</option><option>Acidente de Trajeto</option><option>Acidente Típico</option><option>Desvio</option><option>Fatalidade</option><option>Ocorrência Ambiental</option><option>Quase Acidente</option>
+     </select>
+    </div>
+   </div>
+
+   <div id="dynamicArea" class="hidden" style="margin-top:17px"><div class="grid" id="dynamicFields"></div></div>
+   <div class="actions"><button type="reset" class="btn secondary">Limpar formulário</button><button type="submit" class="btn primary">SALVAR E FINALIZAR</button></div>
+  </form>
+ </section>
+ <div class="footer">Protótipo independente para testes • Nenhuma informação é enviada ao sistema oficial.</div>
+</main>
+
+<div id="toast" class="toast" role="status" aria-live="polite">
+ <span class="toast-icon">✓</span>
+ <span id="toastMessage"></span>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+let ignorarConfirmacaoReset=false;
+let toastTimer=null;
+function mostrarToast(mensagem){
+ const toast=$("toast");
+ $("toastMessage").textContent=mensagem;
+ toast.classList.add("show");
+ clearTimeout(toastTimer);
+ toastTimer=setTimeout(()=>toast.classList.remove("show"),3800);
+}
+
+const gravidades=["PG 1 - Baixo","PG 2 - Médio","PG 3 - Alto","PG 4 - Altíssimo"];
+const causas={
+"A. Reação das Pessoas":["A1. Mudança de posição","A2. Parando o serviço","A3. Ajustando o EPI","A4. Adequando o serviço","A5. Travando o Equipamento"],
+"B. Posição das Pessoas":["B1. Bater contra / Ser atingido por","B2. Ficar preso","B3. Risco de queda","B4. Risco de queimadura","B5. Risco de choque elétrico","B6. Risco de Contaminação","B7. Postura inadequada","B8. Esforço inadequado"],
+"C. Equipamento de Proteção Individual":["C1. Cabeça","C2. Sistema respiratório","C3. Olhos e rosto","C4. Ouvidos","C5. Mãos e braços","C6. Tronco","C7. Pés e pernas"],
+"D. Ferramentas e Equipamentos":["D1. Improprias para o serviço","D2. Usadas incorretamente","D3. Em condições inseguras"],
+"E. Procedimentos e Técnicas":["E1. Inadequados para atividade","E2. Não existem procedimentos escritos","E3. Adequados e não seguidos"],
+"F. Organização e Limpeza":["F1. Local sujo","F2. Local desorganizado","F3. Local com vazamento","F4. Resíduos dispostos incorretamente"],
+"G. Proteção Coletiva":["G1. Ausência de Proteção Coletiva","G2. Proteção Coletiva instalada incorretamente (em desacordo com o projeto)","G3. Ausência de Projeto"],
+"H. Condição Insegura":["H1. Condição Insegura"]
+};
+
+function addField(parent,label,id,kind="text",required=true,options=[]){
+ const wrap=document.createElement("div");wrap.className="field"+(kind==="textarea"||kind==="file"?" full":"");
+ const lab=document.createElement("label");lab.htmlFor=id;lab.textContent=label;
+ if(required){const star=document.createElement("span");star.className="req";star.textContent=" *";lab.append(star)}
+ let el;
+ if(kind==="textarea"){el=document.createElement("textarea");el.placeholder="Descreva a ocorrência..."}
+ else if(kind==="select"){el=document.createElement("select");const first=document.createElement("option");first.value="";first.textContent="Selecione...";el.append(first);options.forEach(v=>{const o=document.createElement("option");o.value=v;o.textContent=v;el.append(o)})}
+ else{el=document.createElement("input");el.type=kind}
+ el.id=id;el.required=required;wrap.append(lab,el);parent.append(wrap);return el;
+}
+
+let selectedFiles=[];
+function renderFiles(){
+ const list=$("filelist");if(!list)return;list.innerHTML="";
+ const count=document.createElement("div");count.textContent="Total de Arquivos: "+selectedFiles.length;list.append(count);
+ selectedFiles.forEach((f,i)=>{
+  const row=document.createElement("div");row.className="fileitem";
+  const name=document.createElement("span");name.textContent=f.name;
+  const del=document.createElement("button");del.type="button";del.textContent="Remover";
+  del.onclick=()=>{selectedFiles.splice(i,1);renderFiles()};
+  row.append(name,del);list.append(row);
+ });
+}
+function addFiles(parent){
+ const wrap=document.createElement("div");wrap.className="field full";
+ const lab=document.createElement("label");lab.textContent="Fotos/Vídeos:";wrap.append(lab);
+ const box=document.createElement("div");box.className="upload";
+ const row=document.createElement("div");row.className="uploadrow";
+ const title=document.createElement("span");title.className="uploadtitle";title.textContent="Adicione fotos ou vídeos da ocorrência";
+ const label=document.createElement("label");label.className="uploadbtn";label.htmlFor="arquivos";label.textContent="+ Adicionar Arquivo";
+ const input=document.createElement("input");input.type="file";input.id="arquivos";input.accept="image/*,video/*";input.multiple=true;
+ const list=document.createElement("div");list.className="filelist";list.id="filelist";
+ row.append(title,label);box.append(row,input,list);wrap.append(box);parent.append(wrap);
+ input.addEventListener("change",()=>{[...input.files].forEach(f=>selectedFiles.push(f));renderFiles();input.value=""});
+}
+function addNotice(parent,text){
+ const n=document.createElement("div");n.className="notice";
+ const strong=document.createElement("strong");strong.textContent="Atenção";
+ n.append(strong,document.createTextNode(text));parent.append(n);
+}
+function renderEventFields(){
+ const type=$("tipoEvento").value,area=$("dynamicArea"),box=$("dynamicFields");
+ box.innerHTML="";selectedFiles=[];area.classList.toggle("hidden",!type);if(!type)return;
+ if(type==="Desvio"){
+  addField(box,"Tipo de desvio:","tipoDesvio","select",true,["Ato Inseguro","Condição Insegura"]);
+  addField(box,"Descreva o desvio:","descricaoDesvio","textarea",true);
+ }else{
+  addField(box,"Potencial de Gravidade:","gravidade","select",true,gravidades);
+  if(["Acidente de Trajeto","Acidente Típico","Fatalidade"].includes(type)){
+   addField(box,"Nome do Acidentado:","acidentado","text",true);
+   addField(box,"Função:","funcao","text",true);
+   addField(box,"Funcionário:","funcionario","select",true,["MRV&Coligadas","Terceiro"]);
+  }
+  if(type==="Quase Acidente"){
+   const cause=addField(box,"Causa:","causa","select",true,Object.keys(causas));
+   const subWrap=document.createElement("div");subWrap.className="field full hidden";subWrap.id="subWrap";
+   const subLabel=document.createElement("label");subLabel.textContent="Sub Causa:";
+   const subBox=document.createElement("div");subBox.className="grid";subWrap.append(subLabel,subBox);box.append(subWrap);
+   cause.addEventListener("change",()=>{
+    subBox.innerHTML="";const values=causas[cause.value]||[];subWrap.classList.toggle("hidden",!values.length);
+    values.forEach(value=>{
+     const holder=document.createElement("div");holder.className="field";
+     const l=document.createElement("label");const cb=document.createElement("input");
+     cb.type="checkbox";cb.name="subcausa";cb.value=value;cb.style.width="auto";cb.style.minHeight="0";cb.style.marginRight="8px";
+     l.append(cb,document.createTextNode(value));holder.append(l);subBox.append(holder);
+    });
+   });
+  }
+  addField(box,"Descrição da ocorrência:","descricaoOcorrencia","textarea",true);
+  if(["Acidente de Comunidade","Acidente de Trajeto","Acidente Típico","Fatalidade","Ocorrência Ambiental"].includes(type)){
+   addNotice(box,"Este evento será enviado para os engenheiros e supervisores de SSMA para validarem o registro dessa ocorrência. No protótipo, o envio é apenas simulado.");
+  }
+ }
+ addFiles(box);
+}
+$("tipoEvento").addEventListener("change",renderEventFields);
+
+$("form").addEventListener("reset",event=>{
+ if(!ignorarConfirmacaoReset&&!window.confirm("Tem certeza de que deseja limpar os campos do formulário?")){
+  event.preventDefault();
+  return;
+ }
+ setTimeout(()=>{
+  selectedFiles=[];$("dynamicFields").innerHTML="";$("dynamicArea").classList.add("hidden");
+ },0);
+});
+
+$("form").addEventListener("submit",e=>{
+ e.preventDefault();const type=$("tipoEvento").value;
+ if(!$("obra").value){alert("Selecione uma obra.");$("obraTrigger").focus();return}
+ if(!$("data").value){alert("Selecione a Data da Ocorrência.");$("calendarTrigger").focus();return}
+ if(!$("hora").value){alert("Selecione a Hora da Ocorrência.");$("timeTrigger").focus();return}
+ if(!type){alert("Selecione o Tipo de Evento.");return}
+ const data={obra:$("obra").value,data:$("data").value,hora:$("hora").value,tipoEvento:type};
+ $("dynamicFields").querySelectorAll("input:not([type=checkbox]),select,textarea").forEach(el=>{data[el.id]=el.value});
+ data.subcausas=[...$("dynamicFields").querySelectorAll('input[name="subcausa"]:checked')].map(x=>x.value);
+ data.arquivos=selectedFiles.map(f=>f.name);
+ const saved=JSON.parse(localStorage.getItem("mrv_demo_lancamentos")||"[]");
+ saved.unshift({...data,registradoEm:new Date().toLocaleString("pt-BR")});
+ localStorage.setItem("mrv_demo_lancamentos",JSON.stringify(saved));
+ mostrarToast("Lançamento simulado com sucesso! Nenhum dado foi enviado à MRV.");
+ ignorarConfirmacaoReset=true;
+ $("form").reset();
+ ignorarConfirmacaoReset=false;
+});
+</script>
+
+<script>
+// LISTA DE OBRAS
+const OBRAS_ORIGINAIS=[
+{"name":"GRAN VALLEY","id":"456"},{"name":"GRAN JARDIM","id":"459"},{"name":"GRAN TORINO","id":"460"},{"name":"GRAN CLUB","id":"461"},{"name":"ARCOS DO CERRADO","id":"463"},{"name":"BELA ARTE","id":"464"},{"name":"BELA MORADA","id":"465"},{"name":"PALMEIRA DOURADA","id":"466"},{"name":"PALMEIRA MONARCA","id":"467"},{"name":"4. ADM","id":"468"},{"name":"BELA SUÍÇA","id":"481"},{"name":"PARQUE CASTEL DI VERONA","id":"485"},{"name":"PARQUE CASTELLO DI BORGUESE","id":"486"},{"name":"PARQUE CASTELO GIBRALTAR","id":"487"},{"name":"PARQUE CASTELLO DI BORGUESE","id":"489"},{"name":"CASTELLO DI MOURA","id":"490"},{"name":"CHAPADA DOS PINHEIROS","id":"493"},{"name":"CITTÀ DEI FIORI","id":"494"},{"name":"LUGGO_FLORENÇA GARDEN","id":"496"},{"name":"PARQUE FLORES DA COSTA","id":"497"},{"name":"FONTANA DI GENOVA","id":"498"},{"name":"ILHABELLA GARDEN","id":"499"},{"name":"IMPERIAL GARDEN","id":"500"},{"name":"RESIDENCIAL IMPÉRIO LA CASTELLE","id":"501"},{"name":"PARQUE JARDIM DI STUTTGART","id":"502"},{"name":"LUGGO_RESIDENCIAL CONCEPT","id":"503"},{"name":"MARVILLE RESIDENCE","id":"504"},{"name":"MORADA DAS MAGNÓLIAS","id":"507"},{"name":"NORTE BOULEVARD RESIDENCIAL","id":"511"},{"name":"PALÁCIO DE VERSALHES","id":"512"},{"name":"PARQUE RIO AMAZONAS","id":"517"},{"name":"RESIDENCIAL AMISTAD","id":"518"},{"name":"PARQUE ANDES","id":"519"},{"name":"PARQUE BOA ESPERANÇA","id":"520"},{"name":"RESIDENCIAL BOSQUE DAS MARGARIDAS","id":"522"},{"name":"CHAPADA DAS ROSAS","id":"527"},{"name":"PARQUE DA VINCI","id":"531"},{"name":"FERRETTE RESIDENCIAL","id":"532"},{"name":"FLORES DO MEDITERRÂNEO","id":"535"},{"name":"RESIDENCIAL FORTE VERSALHES","id":"536"},{"name":"JACARANDA PITANGA","id":"537"},{"name":"PARQUE JARDIM DA COSTA","id":"538"},{"name":"PARQUE JARDIM TIRADENTES","id":"540"},{"name":"LAGOA DAS ESMERALDAS","id":"542"},{"name":"PARQUE MATA ATLÂNTICA","id":"543"},{"name":"MAR PARADISO RESIDENCE CLUB_PARQUE MONTE ALTO","id":"544"},{"name":"PARQUE MONTE CERRADO","id":"545"},{"name":"PARQUE MUSIQUE","id":"548"},{"name":"PARQUE PALADINO","id":"549"},{"name":"PARQUE PONTE ROMANA","id":"550"},{"name":"PARQUE PORTO COIMBRA","id":"551"},{"name":"PARQUE PORTO MARABELLA","id":"552"},{"name":"PARQUE PORTO PIRATINI","id":"553"},{"name":"RIO URUGUAI","id":"555"},{"name":"SAINT MARCEL","id":"557"},{"name":"PARQUE SAN MIGUEL","id":"558"},{"name":"PARQUE SANTA ANA","id":"559"},{"name":"RESIDENCIAL SANTA SOFIA","id":"561"},{"name":"PARQUE SERRA DOS IPÊS","id":"562"},{"name":"PARQUE SOL DO ENGENHO","id":"564"},{"name":"PARQUE SOL DO LITORAL","id":"565"},{"name":"TERRAZZO HORIZONTE","id":"567"},{"name":"PARQUE TRILHAS DAS FLORES","id":"568"},{"name":"PARQUE TRILHAS DO PARAÍSO","id":"569"},{"name":"PARQUE VILA DIAMANTE","id":"572"},{"name":"PARQUE VILA DE ITAPUÃ","id":"573"},{"name":"PARQUE VILA SAFIRA","id":"574"},{"name":"LUGGO_PORTO ARUBA","id":"577"},{"name":"RESIDENCIAL PORTO BAHAMAS","id":"578"},{"name":"RESIDENCIAL PORTO DOM FELICIANO","id":"579"},{"name":"PARQUE PORTO GRAMADO","id":"580"},{"name":"RESIDENCIAL PORTO LOS ANDES","id":"581"},{"name":"PARQUE PORTO RIO GRANDE","id":"582"},{"name":"RESIDENCIAL PORTO SAN DIEGO","id":"583"},{"name":"PRAIA DE PONTA NEGRA","id":"584"},{"name":"PRÍNCIPE DE VIANA","id":"585"},{"name":"RESIDENCIAL ACORDES","id":"596"},{"name":"RESIDENCIAL ÁGUAS CRISTALINAS","id":"597"},{"name":"RESIDENCIAL AMBRÓSIO","id":"600"},{"name":"RESIDENCIAL ANGELLIS","id":"602"},{"name":"RESIDENCIAL ARGUS","id":"603"},{"name":"RESIDENCIAL ARITÁ","id":"604"},{"name":"RESIDENCIAL BARCHI","id":"607"},{"name":"RESIDENCIAL BELA VISTA","id":"608"},{"name":"RESIDENCIAL BRUNNEN","id":"612"},{"name":"RESIDENCIAL CAMPO DA MATA","id":"613"},{"name":"RESIDENCIAL CAMPO DAS FLORES","id":"614"},{"name":"RESIDENCIAL CAMPO DAS TULIPAS","id":"615"},{"name":"RESIDENCIAL CAMPO DI ROMA","id":"616"},{"name":"RESIDENCIAL CANELLI","id":"617"},{"name":"RESIDENCIAL CARMELO","id":"618"},{"name":"UNIPARK RESIDENCIAL CENTRAL PARK","id":"621"},{"name":"RESIDENCIAL CEREJEIRAS","id":"622"},{"name":"RESIDENCIAL CHANCELLOR","id":"623"},{"name":"RESIDENCIAL CHÂTEAU BELVEDERE","id":"624"},{"name":"RESIDENCIAL CHÂTEAU BOULEVARD","id":"625"},{"name":"RESIDENCIAL CITÁ","id":"627"},{"name":"RESIDENCIAL CLARET","id":"628"},{"name":"RESIDENCIAL COLINAS DE NAPOLES","id":"629"},{"name":"RESIDENCIAL COLINAS DE ROMA","id":"630"},{"name":"RESIDENCIAL RIVIERA","id":"manual-residencial-riviera"}
+];
+
+const FAVORITES_KEY="mrv_obras_favoritas_v1";
+const favoriteObras=new Set(JSON.parse(localStorage.getItem(FAVORITES_KEY)||"[]"));
+const normalizeText=value=>value.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLocaleLowerCase("pt-BR");
+
+function renderObras(){
+ const query=normalizeText($("obraSearch").value.trim());
+ const sorted=[...OBRAS_ORIGINAIS].sort((a,b)=>{
+  const af=favoriteObras.has(a.name),bf=favoriteObras.has(b.name);
+  if(af!==bf)return af?-1:1;
+  return a.name.localeCompare(b.name,"pt-BR",{sensitivity:"base"})||Number(a.id)-Number(b.id);
+ }).filter(work=>normalizeText(work.name).includes(query));
+ const list=$("obraList");list.innerHTML="";
+ if(!sorted.length){list.innerHTML='<div class="obra-empty">Nenhuma obra encontrada.</div>';return}
+ sorted.forEach(work=>{
+  const name=work.name,row=document.createElement("div");row.className="obra-option";row.dataset.obraId=work.id;
+  const star=document.createElement("button");star.type="button";star.className="obra-star"+(favoriteObras.has(name)?" active":"");star.textContent=favoriteObras.has(name)?"★":"☆";star.title=favoriteObras.has(name)?"Remover dos favoritos":"Favoritar obra";star.setAttribute("aria-label",star.title);
+  star.addEventListener("click",()=>{
+   if(favoriteObras.has(name))favoriteObras.delete(name);else favoriteObras.add(name);
+   localStorage.setItem(FAVORITES_KEY,JSON.stringify([...favoriteObras]));renderObras();
+  });
+  const label=document.createElement("span");label.className="obra-name";label.textContent=name;
+  label.addEventListener("click",()=>{
+   $("obra").value=name;
+   $("obraChosen").textContent=name;
+   localStorage.setItem("mrv_ultima_obra_v1",name);
+   $("obraMenu").classList.add("hidden");
+   $("obraTrigger").setAttribute("aria-expanded","false");
+  });
+  row.append(star,label);list.append(row);
+ });
+}
+$("obraTrigger").addEventListener("click",()=>{
+ const menu=$("obraMenu");menu.classList.toggle("hidden");
+ const opened=!menu.classList.contains("hidden");$("obraTrigger").setAttribute("aria-expanded",String(opened));
+ if(opened){renderObras();$("obraSearch").focus()}
+});
+$("obraSearch").addEventListener("input",renderObras);
+document.addEventListener("click",event=>{
+ if(!$("obraPicker").contains(event.target)){$("obraMenu").classList.add("hidden");$("obraTrigger").setAttribute("aria-expanded","false")}
+});
+// CALENDÁRIO PERSONALIZADO
+(function(){
+ const input=$("data"),trigger=$("calendarTrigger"),popup=$("calendarPopup"),selectedText=$("calendarSelected"),monthText=$("calendarMonth"),daysBox=$("calendarDays");
+ const today=new Date();today.setHours(0,0,0,0);
+ let currentMonth=new Date(today.getFullYear(),today.getMonth(),1);
+ const formatDate=date=>`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
+ const parseDate=value=>{if(!value)return null;const [y,m,d]=value.split("-").map(Number);return new Date(y,m-1,d)};
+ function updateSelected(){
+  if(!input.value){selectedText.textContent="Selecione uma data...";return}
+  selectedText.textContent=parseDate(input.value).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric"});
+ }
+ function renderCalendar(){
+  const year=currentMonth.getFullYear(),month=currentMonth.getMonth();
+  monthText.textContent=currentMonth.toLocaleDateString("pt-BR",{month:"long",year:"numeric"});
+  daysBox.innerHTML="";
+  const firstDay=new Date(year,month,1).getDay(),daysInMonth=new Date(year,month+1,0).getDate(),daysPreviousMonth=new Date(year,month,0).getDate();
+  for(let i=0;i<42;i++){
+   let date,otherMonth=false;
+   if(i<firstDay){date=new Date(year,month-1,daysPreviousMonth-firstDay+i+1);otherMonth=true}
+   else if(i>=firstDay+daysInMonth){date=new Date(year,month+1,i-firstDay-daysInMonth+1);otherMonth=true}
+   else date=new Date(year,month,i-firstDay+1);
+   const button=document.createElement("button");button.type="button";button.className="calendar-day";button.textContent=date.getDate();
+   const value=formatDate(date);
+   if(otherMonth)button.classList.add("other-month");
+   if(value===formatDate(today))button.classList.add("today");
+   if(value===input.value)button.classList.add("selected");
+   button.addEventListener("click",()=>{
+    input.value=value;updateSelected();input.dispatchEvent(new Event("change",{bubbles:true}));closeCalendar();
+   });
+   daysBox.append(button);
+  }
+ }
+ function openCalendar(){
+  if(input.value){const selected=parseDate(input.value);currentMonth=new Date(selected.getFullYear(),selected.getMonth(),1)}
+  else currentMonth=new Date(today.getFullYear(),today.getMonth(),1);
+  renderCalendar();popup.classList.remove("calendar-hidden");trigger.setAttribute("aria-expanded","true");
+ }
+ function closeCalendar(){popup.classList.add("calendar-hidden");trigger.setAttribute("aria-expanded","false")}
+ trigger.addEventListener("click",()=>popup.classList.contains("calendar-hidden")?openCalendar():closeCalendar());
+ $("calendarPrev").addEventListener("click",()=>{currentMonth.setMonth(currentMonth.getMonth()-1);renderCalendar()});
+ $("calendarNext").addEventListener("click",()=>{currentMonth.setMonth(currentMonth.getMonth()+1);renderCalendar()});
+ $("calendarToday").addEventListener("click",()=>{
+  input.value=formatDate(today);currentMonth=new Date(today.getFullYear(),today.getMonth(),1);updateSelected();renderCalendar();input.dispatchEvent(new Event("change",{bubbles:true}));closeCalendar();
+ });
+ $("calendarClear").addEventListener("click",()=>{input.value="";updateSelected();renderCalendar();input.dispatchEvent(new Event("change",{bubbles:true}));closeCalendar()});
+ document.addEventListener("click",event=>{if(!popup.contains(event.target)&&!trigger.contains(event.target))closeCalendar()});
+ document.addEventListener("keydown",event=>{if(event.key==="Escape")closeCalendar()});
+ $("form").addEventListener("reset",()=>setTimeout(()=>{
+  input.value="";updateSelected();currentMonth=new Date(today.getFullYear(),today.getMonth(),1);closeCalendar();
+ },0));
+ updateSelected();
+})();
+
+// RELÓGIO PERSONALIZADO — CORRIGIDO
+(function(){
+ const input=$("hora"),trigger=$("timeTrigger"),popup=$("timePopup"),selectedText=$("timeSelected");
+ const hourOptions=$("hourOptions"),minuteOptions=$("minuteOptions");
+ const previewHour=$("previewHour"),previewMinute=$("previewMinute");
+ let temporaryHour="00",temporaryMinute="00",optionsCreated=false;
+
+ function updatePreview(){previewHour.textContent=temporaryHour;previewMinute.textContent=temporaryMinute}
+ function updateSelectedText(){selectedText.textContent=input.value||"Selecione um horário..."}
+ function updateOptions(container,value){
+  container.querySelectorAll(".time-option").forEach(button=>{
+   button.classList.toggle("selected",button.dataset.value===value);
+  });
+ }
+ function scrollToSelected(container){
+  const selected=container.querySelector(".selected");
+  if(selected){
+   container.scrollTop=selected.offsetTop-container.offsetTop-(container.clientHeight/2)+(selected.clientHeight/2);
+  }
+ }
+ function createOptions(){
+  if(optionsCreated)return;
+  for(let i=0;i<24;i++){
+   const value=String(i).padStart(2,"0"),button=document.createElement("button");
+   button.type="button";button.className="time-option hour-option";button.textContent=value;button.dataset.value=value;
+   hourOptions.appendChild(button);
+  }
+  for(let i=0;i<60;i++){
+   const value=String(i).padStart(2,"0"),button=document.createElement("button");
+   button.type="button";button.className="time-option minute-option";button.textContent=value;button.dataset.value=value;
+   minuteOptions.appendChild(button);
+  }
+  optionsCreated=true;
+ }
+ function openTimePicker(){
+  if(input.value&&/^\d{2}:\d{2}$/.test(input.value)){
+   const parts=input.value.split(":");temporaryHour=parts[0];temporaryMinute=parts[1];
+  }else{temporaryHour="00";temporaryMinute="00"}
+  createOptions();updateOptions(hourOptions,temporaryHour);updateOptions(minuteOptions,temporaryMinute);updatePreview();
+  popup.classList.remove("time-hidden");trigger.setAttribute("aria-expanded","true");
+  requestAnimationFrame(()=>{scrollToSelected(hourOptions);scrollToSelected(minuteOptions)});
+ }
+ function closeTimePicker(){popup.classList.add("time-hidden");trigger.setAttribute("aria-expanded","false")}
+
+ hourOptions.addEventListener("click",event=>{
+  const button=event.target.closest(".hour-option");if(!button)return;
+  temporaryHour=button.dataset.value;updateOptions(hourOptions,temporaryHour);updatePreview();
+ });
+ minuteOptions.addEventListener("click",event=>{
+  const button=event.target.closest(".minute-option");if(!button)return;
+  temporaryMinute=button.dataset.value;updateOptions(minuteOptions,temporaryMinute);updatePreview();
+ });
+ trigger.addEventListener("click",event=>{
+  event.stopPropagation();
+  if(popup.classList.contains("time-hidden"))openTimePicker();else closeTimePicker();
+ });
+ popup.addEventListener("click",event=>event.stopPropagation());
+
+ $("timeConfirm").addEventListener("click",()=>{
+  input.value=temporaryHour+":"+temporaryMinute;updateSelectedText();
+  input.dispatchEvent(new Event("change",{bubbles:true}));closeTimePicker();
+ });
+ $("timeCancel").addEventListener("click",closeTimePicker);
+
+ document.addEventListener("click",event=>{
+  if(!popup.contains(event.target)&&!trigger.contains(event.target))closeTimePicker();
+ });
+ document.addEventListener("keydown",event=>{if(event.key==="Escape")closeTimePicker()});
+ $("form").addEventListener("reset",()=>setTimeout(()=>{
+  input.value="";temporaryHour="00";temporaryMinute="00";updateSelectedText();updatePreview();closeTimePicker();
+  if(optionsCreated){updateOptions(hourOptions,"00");updateOptions(minuteOptions,"00")}
+ },0));
+ updateSelectedText();
+})();
+
+// DATA E HORA AUTOMÁTICAS + RESTAURAÇÃO DA ÚLTIMA OBRA
+function preencherDataHoraAtual(){
+ const agora=new Date();
+ const ano=agora.getFullYear();
+ const mes=String(agora.getMonth()+1).padStart(2,"0");
+ const dia=String(agora.getDate()).padStart(2,"0");
+ const hora=String(agora.getHours()).padStart(2,"0");
+ const minuto=String(agora.getMinutes()).padStart(2,"0");
+ const valorData=`${ano}-${mes}-${dia}`;
+ const valorHora=`${hora}:${minuto}`;
+ $("data").value=valorData;
+ $("calendarSelected").textContent=agora.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric"});
+ $("hora").value=valorHora;
+ $("timeSelected").textContent=valorHora;
+ $("previewHour").textContent=hora;
+ $("previewMinute").textContent=minuto;
+}
+
+function restaurarUltimaObra(){
+ const ultima=localStorage.getItem("mrv_ultima_obra_v1")||"";
+ if(ultima&&OBRAS_ORIGINAIS.some(obra=>obra.name===ultima)){
+  $("obra").value=ultima;
+  $("obraChosen").textContent=ultima;
+ }
+}
+
+$("form").addEventListener("reset",()=>{
+ setTimeout(()=>{
+  restaurarUltimaObra();
+  preencherDataHoraAtual();
+ },0);
+});
+
+restaurarUltimaObra();
+preencherDataHoraAtual();
+</script>
+<script>
+// Instalação como aplicativo (PWA) no Chrome/Android e navegadores compatíveis.
+let eventoInstalacaoPWA = null;
+const botaoInstalarPWA = document.getElementById('installAppButton');
+
+window.addEventListener('beforeinstallprompt', (event) => {
+  event.preventDefault();
+  eventoInstalacaoPWA = event;
+  botaoInstalarPWA.hidden = false;
+});
+
+botaoInstalarPWA.addEventListener('click', async () => {
+  if (!eventoInstalacaoPWA) return;
+  eventoInstalacaoPWA.prompt();
+  await eventoInstalacaoPWA.userChoice;
+  eventoInstalacaoPWA = null;
+  botaoInstalarPWA.hidden = true;
+});
+
+window.addEventListener('appinstalled', () => {
+  botaoInstalarPWA.hidden = true;
+  eventoInstalacaoPWA = null;
+});
+
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(error => console.error('Falha ao registrar o modo offline:', error));
+  });
+}
+</script>
+</body>
+</html>
